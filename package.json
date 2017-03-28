@@ -1,6 +1,6 @@
 {
     "name": "node-web-scaffolding",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "scaffolding to start a web application + REST api with Nodejs",
     "main": "main.js",
     "scripts": {

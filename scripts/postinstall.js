@@ -80,7 +80,7 @@ function moveFilesProper() {
 
 popDir();
 
-if(/win/i.test(os.platform())) {
+if(/^win/i.test(os.platform())) {
     // windows
     moveFilesWindows();
 } else {
