@@ -8,6 +8,7 @@ const
     appDir = "../" + appName,
     filesToCopy = ["client", "server", "package.json", "LICENSE", "README.md"];
 
+//==============================================================================
 function _printRenameError(error) {
     if (error) {
         console.error("Error moving file to working directory", error);
@@ -15,38 +16,42 @@ function _printRenameError(error) {
     }
 }
 
-function _printUnlinkError(error) {
+//==============================================================================
+function _printUnlinkError(error, i_sFile) {
     if (error) {
-        console.error("Error removing file from working directory", error);
+        console.error("Error removing ", i_sFile, " from working directory", error);
         process.exit();
     }
 }
 
+//==============================================================================
 function popDir() {
     process.chdir("../");
-    console.log("* Current Working Directory: ", process.cwd());
 }
 
+//==============================================================================
 function removeFile(i_sFile) {
     return new Promise(i_oResolve => {
-        console.log("Removing file", i_sFile, process.cwd());
         fs.unlink(i_sFile, (error) => {
-            _printUnlinkError(error);
+            _printUnlinkError(error, i_sFile);
             i_oResolve();
         });
     });
 }
 
-function removeDir(i_sDirName) {
+//==============================================================================
+function removeDir(i_sDirName, i_bQuiet) {
     return new Promise(i_oResolve => {
-        console.log("Removing directory ", i_sDirName, process.cwd());
         fs.rmdir(i_sDirName, (error) => {
-            _printUnlinkError(error);
+            if (error && !i_bQuiet) {
+                _printUnlinkError(error, i_sDirName);
+            }
             i_oResolve();
         });
     });
 }
 
+//==============================================================================
 function moveFilesWindows() {
     fs.mkdir(appDir, error => {
         if (error) {
@@ -61,26 +66,30 @@ function moveFilesWindows() {
         removeFile(path.join(appName, ".npmignore"))
             .then(() => removeFile(path.join(appName, "scripts", "postinstall.js")))
             .then(() => removeDir(path.join(appName, "scripts")))
-            .then(() => removeDir(path.join(appName)))
+            .then(() => removeDir(path.join(appName), true))
+            .then(() => removeDir(".staging"))
             .then(popDir)
-            .then(() => removeDir("node_modules"));
+            .then(() => removeDir("node_modules", true));
     });
 }
 
+//==============================================================================
 function moveFilesProper() {
     fs.rename(appName, appDir, (error) => {
         _printRenameError(error);
 
-        popDir();
-        fs.rmdir("node_modules", (error) => {
-            _printUnlinkError(error);
-        });
+        removeDir(".staging")
+            .then(popDir)
+            .then(() => removeDir("node_modules", true));
     });
 }
 
+//==============================================================================
+// MAIN SCRIPT EXECUTION
+//==============================================================================
 popDir();
 
-if(/^win/i.test(os.platform())) {
+if (/^win/i.test(os.platform())) {
     // windows
     moveFilesWindows();
 } else {

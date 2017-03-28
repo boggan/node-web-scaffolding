@@ -8,6 +8,16 @@ NodeJS 6.10+ (https://nodejs.org/)
 
 ## Installation
 
+install via npm:
+
+**npm install node-web-scaffolding**
+
+**Note**: if install is on windows, make sure you remove the empty node_modules/node-web-scaffolding folder in the root of your installation folder
+
+or clone via git:
+
+**git clone https://github.com/boggan/node-web-scaffolding.git**
+
 ### Server
 
 Go to the server folder and run the following commands:
@@ -25,5 +35,7 @@ The Client folder is where the web server will feed any of the local files you w
 Once the server is running and you have some files in the client folder visit http://localhost:8080 to access you web application.
 
 the API is accessible via http://localhost:8080/api/
+
+## Post Installation Notes
 
 ## Enjoy! :)
