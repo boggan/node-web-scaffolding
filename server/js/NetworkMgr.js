@@ -16,6 +16,8 @@ function cNetworkMgr(i_oApplication) {
     // Public methods
     //=============================================================================
     this.startServer = function() {
+        var l_rAPIRegExp = /^\/API\/(\w+)?(?:\/(.*))?/i;
+
         console.log("NetworkMgr::startServer::Starting Web Server...");
         m_oServer = restify.createServer({
             name: 'WebApp'
@@ -40,10 +42,10 @@ function cNetworkMgr(i_oApplication) {
         m_oServer.get(/^(?!\/API)/i, _httpFileResponse);
 
         // handle all API requests, ie: all other URLs
-        m_oServer.get(/^\/API\/(\w+)?(?:\/(.*))?/i, _httpAPIResponse);
-        m_oServer.post(/^\/API\/(\w+)?(?:\/(.*))?/i, _httpAPIResponse);
-        m_oServer.put(/^\/API\/(\w+)?(?:\/(.*))?/i, _httpAPIResponse);
-        m_oServer.del(/^\/API\/(\w+)?(?:\/(.*))?/i, _httpAPIResponse);
+        m_oServer.get(l_rAPIRegExp, _httpAPIResponse);
+        m_oServer.post(l_rAPIRegExp, _httpAPIResponse);
+        m_oServer.put(l_rAPIRegExp, _httpAPIResponse);
+        m_oServer.del(l_rAPIRegExp, _httpAPIResponse);
 
         console.log("NetworkMgr::startServer::Web Server Started http://localhost:" + config.network.server_port + "/");
 
@@ -88,6 +90,9 @@ function cNetworkMgr(i_oApplication) {
             l_xData = "";
 
         l_oAPIInfos = _extractAPIRequest(l_sURL);
+        l_oAPIInfos.method = i_oReq.method;
+        l_oAPIInfos.httpRequest = i_oReq;
+        l_oAPIInfos.httpResponse = i_oRes;
         m_oApplication.handleAPIRequest(l_oAPIInfos, _onAPIRequestCompleted.bind(m_oInterface, i_oReq, i_oRes, i_oNext));
     }
 
